@@ -10,7 +10,6 @@ from app.db.models import Extraction, GeneratedOutput
 from app.schemas.api import GenerateRequest, GenerateResponseEnvelope
 from app.schemas.extraction import ExtractedCall
 from app.services.generation.pipeline import generate_all
-from app.services.openai_client import StructuredOutputError
 
 router = APIRouter(tags=["generate"])
 
@@ -30,10 +29,8 @@ async def generate(
     else:
         call = req.extracted_call
 
-    try:
-        result = await generate_all(call)
-    except StructuredOutputError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    # LLM/provider failures propagate as LLMError and are mapped by the global handler.
+    result = await generate_all(call)
 
     generated_output_id: int | None = None
     if extraction is not None:

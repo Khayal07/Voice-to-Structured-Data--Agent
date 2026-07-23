@@ -10,7 +10,6 @@ from app.db.database import get_session
 from app.db.models import Extraction, Transcript
 from app.schemas.api import ExtractRequest, ExtractResponse
 from app.services.extraction import extract_call
-from app.services.openai_client import StructuredOutputError
 
 router = APIRouter(tags=["extract"])
 
@@ -20,22 +19,26 @@ async def extract(
     req: ExtractRequest,
     session: AsyncSession = Depends(get_session),
 ) -> ExtractResponse:
+    settings = get_settings()
+
     # Resolve the transcript: either look up a stored one, or persist the new text.
     if req.transcript_id is not None:
         transcript = await session.get(Transcript, req.transcript_id)
         if transcript is None:
             raise HTTPException(status_code=404, detail="transcript_id not found")
     else:
+        if len(req.transcript) > settings.max_transcript_chars:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Transcript exceeds {settings.max_transcript_chars} characters",
+            )
         transcript = Transcript(source_type="text", content=req.transcript)
         session.add(transcript)
         await session.flush()  # assigns transcript.id
 
-    try:
-        extracted = await extract_call(transcript.content)
-    except StructuredOutputError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    # LLM/provider failures propagate as LLMError and are mapped by the global handler.
+    extracted = await extract_call(transcript.content)
 
-    settings = get_settings()
     extraction = Extraction(
         transcript_id=transcript.id,
         data=extracted.model_dump(mode="json"),
