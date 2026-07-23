@@ -11,7 +11,7 @@ from app.services.openai_client import structured_completion
 
 async def generate_email(call: ExtractedCall) -> FollowUpEmail:
     return await structured_completion(
-        model=get_settings().openai_extraction_model,
+        model=get_settings().openai_generation_model,
         system=EMAIL_SYSTEM_PROMPT,
         user=call.model_dump_json(indent=2),
         response_model=FollowUpEmail,

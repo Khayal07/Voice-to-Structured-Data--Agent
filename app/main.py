@@ -51,5 +51,6 @@ async def health() -> dict:
         "status": "ok",
         "openai_configured": bool(settings.openai_api_key),
         "extraction_model": settings.openai_extraction_model,
+        "generation_model": settings.openai_generation_model,
         "database_connected": db_ok,
     }

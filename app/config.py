@@ -9,7 +9,10 @@ class Settings(BaseSettings):
     """Runtime settings sourced from environment variables (or a local .env)."""
 
     openai_api_key: str = ""
+    # Extraction + judge run on the stronger model (accuracy is critical here).
     openai_extraction_model: str = "gpt-4o"
+    # Generators format already-structured data, so a cheaper model is fine.
+    openai_generation_model: str = "gpt-4o-mini"
     openai_transcribe_model: str = "whisper-1"
 
     database_url: str = (
