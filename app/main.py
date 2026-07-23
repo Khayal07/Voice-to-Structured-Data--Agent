@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.config import get_settings
-from app.db.database import engine, init_db
+from app.db.database import engine
 from app.errors import LLMError
 from app.routers import calls as calls_router
 from app.routers import extract as extract_router
@@ -26,9 +26,12 @@ logger = logging.getLogger("app")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create tables on startup, dispose the engine on shutdown."""
-    logger.info("Starting up; ensuring database schema exists")
-    await init_db()
+    """Dispose the engine on shutdown.
+
+    The database schema is managed by Alembic migrations (applied by the container
+    entrypoint via `alembic upgrade head`), so the app does not create tables here.
+    """
+    logger.info("Starting up")
     yield
     await engine.dispose()
     logger.info("Shut down cleanly")

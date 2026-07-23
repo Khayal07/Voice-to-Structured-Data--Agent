@@ -17,6 +17,7 @@ services:
 
   api:
     build: .
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -27,8 +28,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - .:/app
 
 volumes:
   pgdata:
