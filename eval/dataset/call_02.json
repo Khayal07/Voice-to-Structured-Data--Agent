@@ -2,9 +2,7 @@
   "scenario": "support / troubleshooting",
   "participants": ["Tom (Beacon Logistics)", "Elena (DataForge Support)"],
   "primary_contact": "Tom",
-  "decisions": [
-    { "description": "Raise the import timeout on the account to 120 seconds" }
-  ],
+  "decisions": [],
   "action_items": [
     { "description": "Increase the import timeout to 120 seconds on Beacon's account", "owner": "Elena" },
     { "description": "Open an engineering ticket to optimize imports for larger datasets", "owner": "Elena" },

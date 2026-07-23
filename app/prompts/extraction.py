@@ -7,6 +7,13 @@ information that is actually supported by the transcript.
 Rules:
 - Extract participants, a neutral summary, key discussion points, decisions, and \
 action items.
+- Extract atomic items. If one sentence commits to several distinct actions (for \
+example two different tasks joined by "and"), split them into separate action items, \
+one per action. Likewise, capture every commitment or next step someone agrees to as \
+its own action item.
+- A "decision" is a choice or conclusion the group reached (e.g. which option to go \
+with). A concrete task someone will do is an "action item". If something is both, \
+prefer recording it as an action item.
 - For every decision and action item, include a short verbatim `source_quote` copied \
 from the transcript that supports it. If you cannot find a supporting quote, do not \
 include the item.
