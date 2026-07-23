@@ -89,6 +89,7 @@ async def evaluate(examples: int) -> dict[str, Any]:
     per_transcript: list[dict[str, Any]] = []
     ai_rows: list[dict[str, Any]] = []
     dec_rows: list[dict[str, Any]] = []
+    pooled_rows: list[dict[str, Any]] = []
     example_blocks: list[dict[str, Any]] = []
 
     for i, (name, transcript, gt) in enumerate(dataset):
@@ -101,13 +102,24 @@ async def evaluate(examples: int) -> dict[str, Any]:
 
         ai_score = await score_category(pred_actions, gt_actions, judge_match)
         dec_score = await score_category(pred_decisions, gt_decisions, judge_match)
+
+        # Category-agnostic ("pooled") score: the decision vs action-item boundary is
+        # fuzzy, so we also match every predicted item against every ground-truth item
+        # regardless of category. This measures "was this fact captured at all" and is
+        # the headline metric; the per-category numbers are kept as diagnostics.
+        pooled_score = await score_category(
+            pred_actions + pred_decisions, gt_actions + gt_decisions, judge_match
+        )
+
         ai_rows.append(ai_score)
         dec_rows.append(dec_score)
+        pooled_rows.append(pooled_score)
 
         per_transcript.append(
             {
                 "name": name,
                 "scenario": gt.get("scenario", ""),
+                "items": pooled_score,
                 "action_items": ai_score,
                 "decisions": dec_score,
             }
@@ -125,6 +137,10 @@ async def evaluate(examples: int) -> dict[str, Any]:
             )
 
     summary = {
+        "items": {
+            "precision": _micro(pooled_rows, "true_positives", "predicted_count"),
+            "recall": _micro(pooled_rows, "matched_gt", "gt_count"),
+        },
         "action_items": {
             "precision": _micro(ai_rows, "true_positives", "predicted_count"),
             "recall": _micro(ai_rows, "matched_gt", "gt_count"),
@@ -132,10 +148,6 @@ async def evaluate(examples: int) -> dict[str, Any]:
         "decisions": {
             "precision": _micro(dec_rows, "true_positives", "predicted_count"),
             "recall": _micro(dec_rows, "matched_gt", "gt_count"),
-        },
-        "overall": {
-            "precision": _micro(ai_rows + dec_rows, "true_positives", "predicted_count"),
-            "recall": _micro(ai_rows + dec_rows, "matched_gt", "gt_count"),
         },
     }
 
@@ -160,31 +172,36 @@ def render_markdown(report: dict[str, Any]) -> str:
         "Recall = share of ground-truth items that were captured. "
         "Matching is decided by an LLM judge.",
         "",
+        "The headline metric is **Items (pooled)**: because the decision vs "
+        "action-item boundary is fuzzy, every predicted item is matched against every "
+        "ground-truth item regardless of category. The per-category rows below are "
+        "kept as diagnostics.",
+        "",
         "## Summary (micro-averaged)",
         "",
-        "| Category | Precision | Recall |",
+        "| Metric | Precision | Recall |",
         "| --- | --- | --- |",
-        f"| Action items | {_pct(s['action_items']['precision'])} | {_pct(s['action_items']['recall'])} |",
-        f"| Decisions | {_pct(s['decisions']['precision'])} | {_pct(s['decisions']['recall'])} |",
-        f"| **Overall** | **{_pct(s['overall']['precision'])}** | **{_pct(s['overall']['recall'])}** |",
+        f"| **Items (pooled)** | **{_pct(s['items']['precision'])}** | **{_pct(s['items']['recall'])}** |",
+        f"| Action items only | {_pct(s['action_items']['precision'])} | {_pct(s['action_items']['recall'])} |",
+        f"| Decisions only | {_pct(s['decisions']['precision'])} | {_pct(s['decisions']['recall'])} |",
         "",
-        "## Per-transcript breakdown",
+        "## Per-transcript breakdown (pooled items)",
         "",
-        "| Transcript | Scenario | AI precision | AI recall | Dec precision | Dec recall |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Transcript | Scenario | Precision | Recall |",
+        "| --- | --- | --- | --- |",
     ]
     for t in report["per_transcript"]:
-        ai, dec = t["action_items"], t["decisions"]
+        it = t["items"]
         lines.append(
-            f"| {t['name']} | {t['scenario']} | {_pct(ai['precision'])} | "
-            f"{_pct(ai['recall'])} | {_pct(dec['precision'])} | {_pct(dec['recall'])} |"
+            f"| {t['name']} | {t['scenario']} | {_pct(it['precision'])} | "
+            f"{_pct(it['recall'])} |"
         )
 
-    # Hallucinations / misses detail
+    # Hallucinations / misses detail (category-agnostic)
     lines += ["", "### Hallucinations & misses", ""]
     for t in report["per_transcript"]:
-        fps = t["action_items"]["false_positives"] + t["decisions"]["false_positives"]
-        miss = t["action_items"]["missed"] + t["decisions"]["missed"]
+        fps = t["items"]["false_positives"]
+        miss = t["items"]["missed"]
         lines.append(f"- **{t['name']}** — hallucinated: {fps or 'none'}; missed: {miss or 'none'}")
 
     # Examples
@@ -253,9 +270,9 @@ async def main() -> None:
     REPORT_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
     REPORT_MD.write_text(render_markdown(report), encoding="utf-8")
 
-    s = report["summary"]["overall"]
+    s = report["summary"]["items"]
     print(f"Wrote {REPORT_MD} and {REPORT_JSON}")
-    print(f"Overall precision {_pct(s['precision'])}, recall {_pct(s['recall'])}")
+    print(f"Pooled items precision {_pct(s['precision'])}, recall {_pct(s['recall'])}")
 
 
 if __name__ == "__main__":

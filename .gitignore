@@ -22,8 +22,7 @@ env/
 .coverage
 htmlcov/
 
-# Generated eval artifacts
-eval/report.md
+# Generated eval artifacts (report.md is committed as a sample; JSON stays local)
 eval/report.json
 
 # OS / editor
