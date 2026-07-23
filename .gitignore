@@ -1,0 +1,33 @@
+# Secrets / local config
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated eval artifacts
+eval/report.md
+eval/report.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
