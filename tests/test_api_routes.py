@@ -47,6 +47,15 @@ GENERATED = GenerateResponse(
 )
 
 
+# --- demo UI -----------------------------------------------------------------
+def test_index_serves_html(client_factory):
+    client = client_factory(FakeSession())
+    r = client.get("/")
+    assert r.status_code == 200
+    assert "text/html" in r.headers["content-type"]
+    assert "Voice" in r.text
+
+
 # --- /extract ----------------------------------------------------------------
 def test_extract_new_transcript_ok(client_factory, monkeypatch):
     async def fake_extract(_):

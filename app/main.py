@@ -2,10 +2,11 @@
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import text
 
 from app.config import get_settings
@@ -67,6 +68,14 @@ app.include_router(transcribe_router.router)
 app.include_router(extract_router.router)
 app.include_router(generate_router.router)
 app.include_router(calls_router.router)
+
+_STATIC_DIR = Path(__file__).parent / "static"
+
+
+@app.get("/", include_in_schema=False)
+async def index() -> FileResponse:
+    """Serve the lightweight demo UI."""
+    return FileResponse(_STATIC_DIR / "index.html")
 
 
 @app.get("/health", tags=["meta"])

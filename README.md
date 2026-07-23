@@ -53,6 +53,7 @@ app/
   services/          openai_client, extraction, transcription, generation/
   prompts/           Prompt templates per layer
   routers/           /transcribe, /extract, /generate, /calls
+  static/            Lightweight demo UI (served at /)
 migrations/          Alembic migration environment + versions
 eval/                Labeled dataset, LLM judge, run_eval.py -> report
 tests/               Unit + integration + route tests (LLM mocked, offline)
@@ -84,7 +85,9 @@ Prerequisites: Docker + Docker Compose (and an OpenAI API key for the LLM featur
    #  "generation_model":"gpt-4o-mini","database_connected":true}
    ```
 
-Interactive API docs are at `http://localhost:8000/docs`.
+Then open **`http://localhost:8000/`** for a lightweight demo UI (paste a transcript,
+get the CRM entry, tasks, and email). Interactive API docs are at
+`http://localhost:8000/docs`.
 
 ### Environment variables (`.env`)
 
@@ -136,6 +139,54 @@ curl -s http://localhost:8000/calls/1
 # (optional) transcribe audio first
 curl -s -X POST http://localhost:8000/transcribe -F "file=@call.mp3"
 ```
+
+## Integrate it into your project
+
+It's a plain JSON/HTTP API, so you can call it from any language or wire it into an
+existing pipeline. Run the service (`docker compose up`) and point your app at the
+base URL (default `http://localhost:8000`). The two calls you need are `/extract`
+(transcript → structure) and `/generate` (structure → CRM + tasks + email).
+
+**Python** (`pip install requests`):
+
+```python
+import requests
+
+BASE = "http://localhost:8000"
+transcript = "Priya: We'll decide by end of quarter. Marcus: I'll send a proposal Wednesday."
+
+extraction = requests.post(f"{BASE}/extract", json={"transcript": transcript}).json()
+result = requests.post(f"{BASE}/generate",
+                       json={"extraction_id": extraction["extraction_id"]}).json()
+
+crm = result["result"]["crm"]
+tasks = result["result"]["tasks"]
+email = result["result"]["email"]
+print(email["subject"], "→", email["to"])
+```
+
+**JavaScript** (`fetch`, works in Node 18+ or the browser):
+
+```js
+const BASE = "http://localhost:8000";
+const post = (path, body) =>
+  fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).then((r) => r.json());
+
+const { extraction_id } = await post("/extract", { transcript });
+const { result } = await post("/generate", { extraction_id });
+// result.crm, result.tasks, result.email
+```
+
+Notes:
+- `/generate` also accepts an inline `{"extracted_call": {...}}` instead of an
+  `extraction_id` — useful to regenerate deliverables without a stored extraction.
+- Extraction and generation are persisted; fetch a full call later with
+  `GET /calls/{transcript_id}`.
+- Provider/rate-limit/timeout failures come back as `4xx/5xx` with a JSON `detail`.
 
 ## Example
 

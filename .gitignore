@@ -25,6 +25,10 @@ htmlcov/
 # Generated eval artifacts (report.md is committed as a sample; JSON stays local)
 eval/report.json
 
+# Browser/test artifacts
+.playwright-mcp/
+ui-*.png
+
 # OS / editor
 .DS_Store
 Thumbs.db

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Voice → Structured Data</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23131a21'/><path d='M7 16h12M14 11l6 5-6 5' stroke='%23e7a13a' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #131a21;
+    --panel: #1a232c;
+    --panel-2: #212d38;
+    --line: #2c3a46;
+    --text: #dce3eb;
+    --muted: #8593a1;
+    --amber: #e7a13a;
+    --teal: #63b5a2;
+    --paper: #f2ecde;
+    --paper-ink: #2a2620;
+    --paper-muted: #7a715d;
+    --paper-line: #ddd2ba;
+    --danger: #e0736a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 64px; }
+
+  /* Header */
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand h1 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 800;
+    font-size: clamp(30px, 5vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    margin: 6px 0 8px;
+  }
+  .brand h1 .arrow { color: var(--amber); }
+  .brand p { color: var(--muted); max-width: 52ch; margin: 0; }
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 13px; white-space: nowrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .status[data-state="working"] { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); }
+  .status[data-state="working"] .dot { background: var(--amber); animation: pulse 1s ease-in-out infinite; }
+  .status[data-state="done"] { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
+  .status[data-state="done"] .dot { background: var(--teal); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 12px;
+  }
+  .eyebrow b { color: var(--teal); font-weight: 600; }
+
+  /* Input side */
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  textarea {
+    width: 100%; min-height: 300px; resize: vertical;
+    background: var(--ink); color: var(--text);
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px;
+    font-family: inherit; font-size: 14px; line-height: 1.6;
+  }
+  textarea:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; border-color: transparent; }
+  .controls { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  button {
+    font-family: inherit; font-size: 14px; cursor: pointer;
+    border-radius: 9px; padding: 11px 16px; border: 1px solid var(--line);
+    background: transparent; color: var(--text); transition: border-color .15s, background .15s, transform .05s;
+  }
+  button:hover { border-color: var(--muted); }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  button.primary { background: var(--amber); color: #241a05; border-color: var(--amber); font-weight: 600; }
+  button.primary:hover { background: color-mix(in srgb, var(--amber) 88%, white); }
+  button[disabled] { opacity: .5; cursor: not-allowed; }
+
+  .facts { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 14px; min-height: 20px; }
+  .facts .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip {
+    font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--text); background: var(--panel-2);
+  }
+  .chip.accent { border-color: color-mix(in srgb, var(--teal) 50%, var(--line)); color: var(--teal); }
+  .facts .meta { color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+  /* Output side — printed slips */
+  .slips { display: flex; flex-direction: column; gap: 16px; }
+  .empty {
+    border: 1px dashed var(--line); border-radius: 12px; padding: 30px 18px;
+    color: var(--muted); text-align: center;
+  }
+  .slip {
+    background: var(--paper); color: var(--paper-ink);
+    border-radius: 10px; padding: 15px 18px 18px;
+    box-shadow: 0 1px 0 var(--paper-line), 0 12px 30px rgba(0,0,0,.28);
+  }
+  .slip .tab {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--paper-muted); font-weight: 600;
+    border-bottom: 1px dashed var(--paper-line); padding-bottom: 11px;
+  }
+  .slip .tab .num { color: var(--amber); }
+  .slip h3 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 700; font-size: 20px; letter-spacing: -0.01em;
+    margin: 13px 0 12px;
+  }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 14px; }
+  .kv dt { color: var(--paper-muted); }
+  .kv dd { margin: 0; color: var(--paper-ink); }
+  .pill {
+    display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--paper-line); background: #fff8ea;
+  }
+  .pill.stage { border-color: color-mix(in srgb, var(--teal) 55%, var(--paper-line)); }
+  .pill.high { background: #f6e2c2; border-color: #e0b877; }
+  .pill.medium { background: #e4efe9; border-color: #9fcabb; }
+  .pill.low { background: #ece7db; }
+  ul.tasks { list-style: none; margin: 0; padding: 0; }
+  ul.tasks li { padding: 9px 0; border-bottom: 1px dashed var(--paper-line); font-size: 14px; }
+  ul.tasks li:last-child { border-bottom: 0; }
+  ul.tasks .who { font-weight: 600; }
+  ul.tasks .when { color: var(--paper-muted); }
+  .email .head { font-size: 13px; color: var(--paper-muted); }
+  .email .head b { color: var(--paper-ink); font-weight: 600; }
+  .email pre {
+    white-space: pre-wrap; word-break: break-word; margin: 12px 0 0;
+    font-family: inherit; font-size: 13.5px; line-height: 1.6;
+  }
+  .notes { font-size: 13.5px; margin-top: 4px; }
+  .error { color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line)); border-radius: 10px; padding: 12px 14px; }
+
+  footer { margin-top: 40px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+  footer a { color: var(--teal); }
+  .slip-enter { animation: rise .38s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Voice <span class="arrow">→</span> Structured Data</h1>
+        <p>Paste a call transcript. Get a CRM entry, a task list, and a follow-up email — extracted once, generated three ways.</p>
+      </div>
+      <span class="status" id="status" data-state="idle"><span class="dot"></span><span id="statusText">idle</span></span>
+    </header>
+
+    <div class="grid">
+      <!-- Input -->
+      <section class="panel" aria-labelledby="in-label">
+        <p class="eyebrow" id="in-label">Transcript <b>· input</b></p>
+        <textarea id="transcript" spellcheck="false" placeholder="Paste a call or meeting transcript…"></textarea>
+        <div class="controls">
+          <button type="button" id="sample">Load sample</button>
+          <button type="button" id="run" class="primary">Extract &amp; generate</button>
+        </div>
+        <div class="facts" id="facts" aria-live="polite"></div>
+      </section>
+
+      <!-- Output -->
+      <section aria-labelledby="out-label">
+        <p class="eyebrow" id="out-label">Deliverables <b>· output</b></p>
+        <div class="slips" id="slips">
+          <div class="empty">Your CRM entry, tasks, and email will appear here.</div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      A demo UI for the Voice-to-Structured-Data Agent. Full API at
+      <a href="/docs">/docs</a> · health at <a href="/health">/health</a>.
+    </footer>
+  </div>
+
+<script>
+const SAMPLE = `Priya (Northwind Analytics): Thanks for making time. We're evaluating a few platforms to replace our in-house reporting stack.
+Marcus (DataForge): Happy to help. What's driving the change right now?
+Priya: Dashboards take minutes to load and our analysts are frustrated. We have about 40 people who'd use this.
+Marcus: DataForge handles that scale comfortably. What's your timeline and budget?
+Priya: We'd want to decide by the end of the quarter. Budget is roughly 60k a year.
+Marcus: That fits our mid-tier plan. I'll send a tailored proposal by Wednesday, and include two customer references from analytics firms.
+Priya: Perfect. On our side, I'll loop in our head of data, Aisha, for the technical deep-dive next week.
+Marcus: Sounds good. Talk soon.`;
+
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status"), statusText = $("statusText");
+const runBtn = $("run"), sampleBtn = $("sample");
+const slips = $("slips"), facts = $("facts"), ta = $("transcript");
+
+function setStatus(state, text) {
+  statusEl.dataset.state = state;
+  statusText.textContent = text;
+}
+const esc = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+sampleBtn.addEventListener("click", () => { ta.value = SAMPLE; ta.focus(); });
+
+runBtn.addEventListener("click", run);
+
+async function run() {
+  const transcript = ta.value.trim();
+  if (!transcript) { ta.focus(); return; }
+  runBtn.disabled = true;
+  facts.innerHTML = "";
+  slips.innerHTML = `<div class="empty">Working…</div>`;
+  setStatus("working", "extracting");
+  try {
+    const extracted = await postJSON("/extract", { transcript });
+    renderFacts(extracted.extracted_call);
+    setStatus("working", "generating");
+    const gen = await postJSON("/generate", { extraction_id: extracted.extraction_id });
+    renderSlips(gen.result);
+    setStatus("done", "done");
+  } catch (err) {
+    slips.innerHTML = `<div class="error">${esc(err.message)}</div>`;
+    setStatus("idle", "idle");
+  } finally {
+    runBtn.disabled = false;
+  }
+}
+
+async function postJSON(url, body) {
+  let res;
+  try {
+    res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } catch {
+    throw new Error("Couldn't reach the API. Is the service running?");
+  }
+  if (!res.ok) {
+    let detail = `Request failed (${res.status}).`;
+    try { const j = await res.json(); if (j.detail) detail = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail); } catch {}
+    throw new Error(detail);
+  }
+  return res.json();
+}
+
+function renderFacts(call) {
+  const parts = (call.participants || []).map((p) =>
+    `<span class="chip${p.is_primary_contact ? " accent" : ""}">${esc(p.name)}${p.organization ? " · " + esc(p.organization) : ""}</span>`
+  ).join("");
+  facts.innerHTML = `
+    <div class="row">${parts || '<span class="chip">no participants found</span>'}</div>
+    <div class="meta">Sentiment: <b>${esc(call.sentiment)}</b> · ${(call.action_items || []).length} action item(s) · ${(call.decisions || []).length} decision(s) · extracted once, reused below</div>`;
+}
+
+function renderSlips(r) {
+  const crm = r.crm, tasks = r.tasks || [], email = r.email;
+  slips.innerHTML = "";
+
+  slips.appendChild(slip("01", "record", "CRM entry", `
+    <dl class="kv">
+      <dt>Contact</dt><dd>${esc(crm.contact.name)}${crm.contact.organization ? " — " + esc(crm.contact.organization) : ""}</dd>
+      <dt>Stage</dt><dd><span class="pill stage">${esc(crm.deal_stage)}</span></dd>
+      <dt>Sentiment</dt><dd>${esc(crm.sentiment)}</dd>
+      <dt>Next step</dt><dd>${esc(crm.next_step)}</dd>
+      <dt>Open items</dt><dd>${esc(crm.open_action_count)}</dd>
+    </dl>
+    <p class="notes">${esc(crm.notes)}</p>`));
+
+  const taskList = tasks.length
+    ? `<ul class="tasks">${tasks.map((t) => `
+        <li><span class="who">${esc(t.owner)}</span> — ${esc(t.description)}
+          <span class="pill ${esc(t.priority)}">${esc(t.priority)}</span>
+          ${t.due_date ? `<span class="when"> · due ${esc(t.due_date)}</span>` : ""}
+        </li>`).join("")}</ul>`
+    : `<p class="notes">No action items were extracted.</p>`;
+  slips.appendChild(slip("02", "checklist", "Task list", taskList));
+
+  slips.appendChild(slip("03", "draft", "Follow-up email", `
+    <div class="email">
+      <div class="head">To: <b>${esc(email.to)}</b></div>
+      <div class="head">Subject: <b>${esc(email.subject)}</b></div>
+      <pre>${esc(email.body)}</pre>
+    </div>`));
+}
+
+function slip(num, kind, title, inner) {
+  const el = document.createElement("article");
+  el.className = "slip slip-enter";
+  el.innerHTML = `<span class="tab"><span class="num">${num}</span> ${kind}</span><h3>${title}</h3>${inner}`;
+  return el;
+}
+</script>
+</body>
+</html>
