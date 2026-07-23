@@ -19,9 +19,7 @@ class Settings(BaseSettings):
     openai_timeout_seconds: float = 60.0
     openai_max_retries: int = 2
 
-    database_url: str = (
-        "postgresql+asyncpg://postgres:postgres@db:5432/voice_agent"
-    )
+    database_url: str = "postgresql+asyncpg://postgres:postgres@db:5432/voice_agent"
 
     # Ops
     log_level: str = "INFO"

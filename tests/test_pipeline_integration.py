@@ -43,7 +43,10 @@ EXTRACTED = ExtractedCall.model_validate(
         "summary": "Acme wants to start a pilot; vendor will send a proposal.",
         "key_points": ["Positive demo", "Pilot interest"],
         "decisions": [
-            {"description": "Move forward with a pilot", "source_quote": "move forward with a pilot"}
+            {
+                "description": "Move forward with a pilot",
+                "source_quote": "move forward with a pilot",
+            }
         ],
         "action_items": [
             {

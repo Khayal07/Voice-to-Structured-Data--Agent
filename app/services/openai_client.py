@@ -17,10 +17,10 @@ import logging
 from typing import TypeVar
 
 from openai import (
-    AsyncOpenAI,
     APIConnectionError,
     APIError,
     APITimeoutError,
+    AsyncOpenAI,
     AuthenticationError,
     RateLimitError,
 )
@@ -63,7 +63,7 @@ def _translate(exc: Exception) -> LLMError:
         return LLMAuthError(str(exc))
     if isinstance(exc, RateLimitError):
         return LLMRateLimitError(str(exc))
-    if isinstance(exc, (APITimeoutError, APIConnectionError)):
+    if isinstance(exc, APITimeoutError | APIConnectionError):
         return LLMUnavailableError(str(exc))
     if isinstance(exc, APIError):
         return LLMUnavailableError(str(exc))

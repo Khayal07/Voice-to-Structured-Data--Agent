@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 90
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W"]
+# B008 is the intended FastAPI idiom (Depends()/File() in argument defaults).
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "eval"]

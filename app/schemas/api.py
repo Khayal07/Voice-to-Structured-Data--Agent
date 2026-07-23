@@ -17,7 +17,7 @@ class ExtractRequest(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _one_of(self) -> "ExtractRequest":
+    def _one_of(self) -> ExtractRequest:
         if not self.transcript and self.transcript_id is None:
             raise ValueError("Provide either 'transcript' or 'transcript_id'.")
         return self
@@ -38,7 +38,7 @@ class GenerateRequest(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _one_of(self) -> "GenerateRequest":
+    def _one_of(self) -> GenerateRequest:
         if self.extraction_id is None and self.extracted_call is None:
             raise ValueError("Provide either 'extraction_id' or 'extracted_call'.")
         return self

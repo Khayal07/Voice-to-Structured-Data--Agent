@@ -29,7 +29,7 @@ class Transcript(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    extractions: Mapped[list["Extraction"]] = relationship(
+    extractions: Mapped[list[Extraction]] = relationship(
         back_populates="transcript", cascade="all, delete-orphan"
     )
 
@@ -47,8 +47,8 @@ class Extraction(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    transcript: Mapped["Transcript"] = relationship(back_populates="extractions")
-    outputs: Mapped[list["GeneratedOutput"]] = relationship(
+    transcript: Mapped[Transcript] = relationship(back_populates="extractions")
+    outputs: Mapped[list[GeneratedOutput]] = relationship(
         back_populates="extraction", cascade="all, delete-orphan"
     )
 
@@ -67,4 +67,4 @@ class GeneratedOutput(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    extraction: Mapped["Extraction"] = relationship(back_populates="outputs")
+    extraction: Mapped[Extraction] = relationship(back_populates="outputs")

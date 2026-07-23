@@ -10,8 +10,7 @@ from app.db.database import get_session
 from app.db.models import Extraction, GeneratedOutput, Transcript
 from app.schemas.api import CallRecord
 from app.schemas.extraction import ExtractedCall
-from app.schemas.generation import FollowUpEmail, GenerateResponse, Task
-from app.schemas.generation import CRMEntry
+from app.schemas.generation import CRMEntry, FollowUpEmail, GenerateResponse, Task
 
 router = APIRouter(tags=["calls"])
 

@@ -40,7 +40,9 @@ GENERATED = GenerateResponse(
         next_step="Send it",
         open_action_count=1,
     ),
-    tasks=[Task(owner="Bob", description="Send it", due_date=None, priority=Priority.medium)],
+    tasks=[
+        Task(owner="Bob", description="Send it", due_date=None, priority=Priority.medium)
+    ],
     email=FollowUpEmail(to="Alice", subject="Hi", body="Thanks.\n[Your name]"),
 )
 
@@ -105,7 +107,9 @@ def test_generate_inline_ok_not_persisted(client_factory, monkeypatch):
 
     monkeypatch.setattr(generate_router, "generate_all", fake_generate)
     client = client_factory(FakeSession())
-    r = client.post("/generate", json={"extracted_call": EXTRACTED.model_dump(mode="json")})
+    r = client.post(
+        "/generate", json={"extracted_call": EXTRACTED.model_dump(mode="json")}
+    )
     assert r.status_code == 200
     body = r.json()
     assert body["generated_output_id"] is None  # inline input is not persisted
@@ -137,9 +141,7 @@ def test_generate_unknown_extraction_404(client_factory):
 # --- /calls ------------------------------------------------------------------
 def test_get_call_found_without_extraction(client_factory):
     transcript = Transcript(id=5, source_type="text", content="hello")
-    session = FakeSession(
-        get_map={("Transcript", 5): transcript}, execute_values=[None]
-    )
+    session = FakeSession(get_map={("Transcript", 5): transcript}, execute_values=[None])
     client = client_factory(session)
     r = client.get("/calls/5")
     assert r.status_code == 200

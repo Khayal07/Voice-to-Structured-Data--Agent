@@ -6,7 +6,7 @@ From the match results we compute recall (coverage of true items) and precision
 (1 - precision approximates the hallucination rate).
 
 Usage:
-    python -m eval.run_eval            # full run, writes eval/report.md + eval/report.json
+    python -m eval.run_eval            # full run, writes report.md + report.json
     python -m eval.run_eval --examples 2
 
 Requires a real OPENAI_API_KEY in the environment / .env.
@@ -181,9 +181,12 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "| Metric | Precision | Recall |",
         "| --- | --- | --- |",
-        f"| **Items (pooled)** | **{_pct(s['items']['precision'])}** | **{_pct(s['items']['recall'])}** |",
-        f"| Action items only | {_pct(s['action_items']['precision'])} | {_pct(s['action_items']['recall'])} |",
-        f"| Decisions only | {_pct(s['decisions']['precision'])} | {_pct(s['decisions']['recall'])} |",
+        f"| **Items (pooled)** | **{_pct(s['items']['precision'])}** "
+        f"| **{_pct(s['items']['recall'])}** |",
+        f"| Action items only | {_pct(s['action_items']['precision'])} "
+        f"| {_pct(s['action_items']['recall'])} |",
+        f"| Decisions only | {_pct(s['decisions']['precision'])} "
+        f"| {_pct(s['decisions']['recall'])} |",
         "",
         "## Per-transcript breakdown (pooled items)",
         "",
@@ -202,7 +205,9 @@ def render_markdown(report: dict[str, Any]) -> str:
     for t in report["per_transcript"]:
         fps = t["items"]["false_positives"]
         miss = t["items"]["missed"]
-        lines.append(f"- **{t['name']}** — hallucinated: {fps or 'none'}; missed: {miss or 'none'}")
+        lines.append(
+            f"- **{t['name']}** — hallucinated: {fps or 'none'}; missed: {miss or 'none'}"
+        )
 
     # Examples
     if report["examples"]:
