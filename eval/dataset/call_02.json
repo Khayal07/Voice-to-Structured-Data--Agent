@@ -1,0 +1,18 @@
+{
+  "scenario": "support / troubleshooting",
+  "participants": ["Tom (Beacon Logistics)", "Elena (DataForge Support)"],
+  "primary_contact": "Tom",
+  "decisions": [
+    { "description": "Raise the import timeout on the account to 120 seconds" }
+  ],
+  "action_items": [
+    { "description": "Increase the import timeout to 120 seconds on Beacon's account", "owner": "Elena" },
+    { "description": "Open an engineering ticket to optimize imports for larger datasets", "owner": "Elena" },
+    { "description": "Re-run the failed import tonight after 8pm", "owner": "Tom" },
+    { "description": "Follow up tomorrow to confirm the imports are stable", "owner": "Elena" }
+  ],
+  "key_facts": [
+    "Nightly data import fails with a connection timeout after 30 seconds",
+    "Data volume grew after onboarding a new warehouse last week"
+  ]
+}

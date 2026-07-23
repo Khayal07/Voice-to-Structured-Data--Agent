@@ -1,0 +1,20 @@
+{
+  "scenario": "renewal / upsell",
+  "participants": ["Rachel (DataForge)", "David (Cedar Health)"],
+  "primary_contact": "David",
+  "decisions": [
+    { "description": "Upgrade Cedar Health to the 30-seat tier with the advanced permissions module" },
+    { "description": "Target signing the renewal before the current contract expires" }
+  ],
+  "action_items": [
+    { "description": "Send an updated renewal quote for the 30-seat tier including the permissions module", "owner": "Rachel" },
+    { "description": "Run the quote by the procurement team before signing", "owner": "David" },
+    { "description": "Have the onboarding team reach out to set up SSO", "owner": "Rachel" }
+  ],
+  "key_facts": [
+    "Contract renews next month",
+    "Team grew from 20 to 25 seats",
+    "Role-based access is required because they handle sensitive patient data",
+    "The new tier requires enabling SSO"
+  ]
+}

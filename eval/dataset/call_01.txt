@@ -1,0 +1,13 @@
+[Sales discovery call — Northwind Analytics <> DataForge]
+
+Priya (Northwind Analytics): Thanks for making time. We're evaluating a few platforms to replace our in-house reporting stack.
+Marcus (DataForge): Happy to help. What's driving the change right now?
+Priya: Our current setup can't handle the volume — dashboards take minutes to load and our analysts are frustrated. We have about 40 people who'd use this.
+Marcus: Got it. DataForge handles that scale comfortably. What's your timeline?
+Priya: We'd want to make a decision by the end of the quarter. Budget is roughly 60k a year.
+Marcus: That works within our mid-tier plan. I'll put together a tailored proposal and send it over by Wednesday.
+Priya: Great. Could you also include a couple of customer references in a similar industry?
+Marcus: Absolutely, I'll add two references from analytics firms.
+Priya: Perfect. On our side, I'll loop in our head of data, Aisha, so she can join the technical deep-dive.
+Marcus: Sounds good. Let's aim to schedule that deep-dive for next week.
+Priya: Works for me. Talk soon.

@@ -1,0 +1,13 @@
+[Renewal & upsell call — Cedar Health <> DataForge]
+
+Rachel (DataForge): Hi David, thanks for hopping on. Your annual contract is up for renewal next month, so I wanted to check in.
+David (Cedar Health): Yes, we've been happy overall. The reporting has become part of our daily workflow.
+Rachel: Glad to hear it. I see your team has grown — you're now at 25 seats but your plan covers 20.
+David: Right, we've added a few analysts. We'll need to bump that up.
+Rachel: I can move you to the 30-seat tier, which also unlocks the advanced permissions module you asked about earlier.
+David: The permissions module is important for us — we handle sensitive patient data, so role-based access is a requirement.
+Rachel: Understood. I'll send over an updated renewal quote for the 30-seat tier with the permissions module included.
+David: Please do. I'll need to run it by our procurement team before signing.
+Rachel: Of course. One thing — the new tier requires enabling SSO. I'll have our onboarding team reach out to set that up.
+David: Good. Let's target having everything signed before the current contract expires.
+Rachel: Agreed. I'll send the quote today.

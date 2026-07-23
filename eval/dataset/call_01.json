@@ -1,0 +1,19 @@
+{
+  "scenario": "sales discovery",
+  "participants": ["Priya (Northwind Analytics)", "Marcus (DataForge)"],
+  "primary_contact": "Priya",
+  "decisions": [
+    { "description": "Northwind will make a platform decision by the end of the quarter" },
+    { "description": "Schedule a technical deep-dive for next week" }
+  ],
+  "action_items": [
+    { "description": "Send a tailored proposal by Wednesday", "owner": "Marcus" },
+    { "description": "Include two customer references from analytics firms in the proposal", "owner": "Marcus" },
+    { "description": "Loop in head of data Aisha for the technical deep-dive", "owner": "Priya" }
+  ],
+  "key_facts": [
+    "About 40 users would use the platform",
+    "Budget is roughly 60k per year",
+    "Current reporting stack is too slow at their data volume"
+  ]
+}

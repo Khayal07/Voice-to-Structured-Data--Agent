@@ -1,0 +1,19 @@
+{
+  "scenario": "internal team sync",
+  "participants": ["Sofia (PM)", "Liam (Eng)", "Nadia (QA)"],
+  "primary_contact": null,
+  "decisions": [
+    { "description": "Version the API instead of changing limits on existing endpoints" },
+    { "description": "Hold the mobile app work until Q4 due to lack of design capacity" }
+  ],
+  "action_items": [
+    { "description": "Prepare the CSV export feature for release by Friday", "owner": "Liam" },
+    { "description": "QA the CSV export by Thursday", "owner": "Nadia" },
+    { "description": "Draft a customer migration guide for the API changes by end of next week", "owner": "Liam" },
+    { "description": "Update the roadmap doc and share it with the wider team", "owner": "Sofia" }
+  ],
+  "key_facts": [
+    "Q3 roadmap focus is CSV export and API rate-limit changes",
+    "Changing existing rate limits risks breaking current integrations"
+  ]
+}

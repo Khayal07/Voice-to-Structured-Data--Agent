@@ -1,0 +1,13 @@
+[Churn-risk call — Orbit Media <> DataForge]
+
+Ken (Orbit Media): I'll be honest, we're seriously considering not renewing. The last two months have been rough.
+Marcus (DataForge): I'm sorry to hear that, Ken. Can you walk me through what's gone wrong?
+Ken: Two outages during our reporting window, and support took days to respond each time. Our exec team noticed.
+Marcus: That's not the experience we want you to have. The outages were tied to a regional issue we've since fixed, but the slow support is on us.
+Ken: The damage is done, but I'm open to hearing how you'd make it right.
+Marcus: Here's what I'll do: I'll assign you a dedicated technical account manager so you have a direct contact, and I'll escalate your support tier to priority at no extra cost.
+Ken: That would help. I'd also want some kind of credit for the downtime.
+Marcus: Fair. I'll request a service credit for the two months affected and get approval from my director.
+Ken: Okay. If you can get that credit approved, I'll take it to my exec team and push to stay.
+Marcus: Understood. I'll follow up by Thursday with the credit confirmation and the name of your new account manager.
+Ken: Thursday works. I'll hold off on any decision until then.

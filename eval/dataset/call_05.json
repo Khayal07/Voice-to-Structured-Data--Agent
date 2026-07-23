@@ -1,0 +1,20 @@
+{
+  "scenario": "churn risk / negative",
+  "participants": ["Ken (Orbit Media)", "Marcus (DataForge)"],
+  "primary_contact": "Ken",
+  "decisions": [
+    { "description": "Assign a dedicated technical account manager to Orbit Media" },
+    { "description": "Escalate Orbit's support tier to priority at no extra cost" }
+  ],
+  "action_items": [
+    { "description": "Request a service credit for the two affected months and get director approval", "owner": "Marcus" },
+    { "description": "Follow up by Thursday with credit confirmation and the new account manager's name", "owner": "Marcus" },
+    { "description": "Take the proposed credit to the exec team to push to stay", "owner": "Ken" }
+  ],
+  "key_facts": [
+    "Orbit is considering not renewing",
+    "There were two outages during their reporting window",
+    "Support was slow to respond, taking days each time",
+    "The outages were tied to a regional issue that has been fixed"
+  ]
+}

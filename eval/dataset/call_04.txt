@@ -1,0 +1,13 @@
+[Internal team sync — DataForge Product]
+
+Sofia (PM): Quick sync on the Q3 roadmap. Two big items: the export-to-CSV feature and the API rate-limit changes.
+Liam (Eng): The CSV export is basically done, just needs QA. I can have it ready for release by Friday.
+Sofia: Great. Nadia, can you handle QA for that this week?
+Nadia (QA): Yes, I'll test the CSV export by Thursday so we can release Friday.
+Sofia: Perfect. On the rate-limit changes — there's a risk of breaking existing integrations. Have we decided how to handle that?
+Liam: I think we should version the API rather than change limits on the existing endpoints.
+Sofia: Agreed, let's version it. Liam, can you write up a short migration guide for customers?
+Liam: Will do, I'll draft the migration guide by end of next week.
+Sofia: One more thing — we're holding the mobile app work until Q4, since we don't have design capacity right now.
+Nadia: Makes sense.
+Sofia: Okay. I'll update the roadmap doc and share it with the wider team after this call.

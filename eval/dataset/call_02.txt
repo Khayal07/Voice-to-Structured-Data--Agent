@@ -1,0 +1,14 @@
+[Support call — Beacon Logistics <> DataForge Support]
+
+Tom (Beacon Logistics): Hi, we're getting sync errors on our nightly data import since yesterday.
+Elena (DataForge Support): Sorry to hear that. Can you tell me what the error message says?
+Tom: It says "connection timeout after 30 seconds" and then the job fails.
+Elena: Okay. That usually means the source query is running long. Did your data volume grow recently?
+Tom: Actually yes — we onboarded a new warehouse last week, so there's a lot more data now.
+Elena: That explains it. I'll raise the import timeout on your account to 120 seconds, which should let the job finish.
+Tom: Will that fix it permanently?
+Elena: It should for now. I'll also open a ticket for our engineering team to look at optimizing the import for larger datasets.
+Tom: Appreciate it. Anything I need to do on my end?
+Elena: Yes — please re-run the failed import tonight after 8pm once I've applied the change, and let me know if it still fails.
+Tom: Got it, I'll re-run it tonight and report back tomorrow morning.
+Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable.
