@@ -1,5 +1,9 @@
 # Voice-to-Structured-Data Agent
 
+[![CI](https://github.com/Khayal07/Voice-to-Structured-Data--Agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Khayal07/Voice-to-Structured-Data--Agent/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 Turn call/meeting transcripts (or audio) into structured, actionable output: a
 **CRM entry**, a **task list**, and a **follow-up email draft** — generated from a
 single extracted structure so the three deliverables stay consistent and cheap.
@@ -41,15 +45,17 @@ flowchart LR
 
 ```
 app/
-  main.py            FastAPI app + lifespan (table creation) + /health
-  config.py          Settings (OpenAI key, models, DB URL)
+  main.py            FastAPI app, middleware, exception handlers, /health
+  config.py          Settings (OpenAI key, models, DB URL, limits)
+  errors.py          Domain errors mapped to HTTP status codes
   db/                Async SQLAlchemy engine, session, ORM models
   schemas/           Pydantic: ExtractedCall, CRM/task/email, API envelopes
   services/          openai_client, extraction, transcription, generation/
   prompts/           Prompt templates per layer
   routers/           /transcribe, /extract, /generate, /calls
+migrations/          Alembic migration environment + versions
 eval/                Labeled dataset, LLM judge, run_eval.py -> report
-tests/               Unit + integration tests (LLM mocked, run offline)
+tests/               Unit + integration + route tests (LLM mocked, offline)
 ```
 
 ## Setup
@@ -63,7 +69,8 @@ Prerequisites: Docker + Docker Compose (and an OpenAI API key for the LLM featur
    # edit .env and set OPENAI_API_KEY=sk-...
    ```
 
-2. Start the API and Postgres:
+2. Start the API and Postgres (the container applies DB migrations automatically
+   before serving):
 
    ```bash
    docker compose up --build
@@ -73,7 +80,8 @@ Prerequisites: Docker + Docker Compose (and an OpenAI API key for the LLM featur
 
    ```bash
    curl http://localhost:8000/health
-   # {"status":"ok","openai_configured":true,"extraction_model":"gpt-4o","database_connected":true}
+   # {"status":"ok","openai_configured":true,"extraction_model":"gpt-4o",
+   #  "generation_model":"gpt-4o-mini","database_connected":true}
    ```
 
 Interactive API docs are at `http://localhost:8000/docs`.
@@ -82,12 +90,21 @@ Interactive API docs are at `http://localhost:8000/docs`.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | Whisper + gpt-4o calls | _(required)_ |
-| `OPENAI_EXTRACTION_MODEL` | Extraction/generation/judge model | `gpt-4o` |
+| `OPENAI_API_KEY` | Whisper + LLM calls | _(required)_ |
+| `OPENAI_EXTRACTION_MODEL` | Extraction + eval judge (accuracy-critical) | `gpt-4o` |
+| `OPENAI_GENERATION_MODEL` | CRM/task/email generators (cheaper) | `gpt-4o-mini` |
 | `OPENAI_TRANSCRIBE_MODEL` | Transcription model | `whisper-1` |
+| `OPENAI_TIMEOUT_SECONDS` | Per-request timeout | `60` |
+| `OPENAI_MAX_RETRIES` | Automatic retries on transient errors | `2` |
 | `DATABASE_URL` | Async Postgres URL | `postgresql+asyncpg://postgres:postgres@db:5432/voice_agent` |
+| `LOG_LEVEL` | Log level | `INFO` |
+| `CORS_ALLOW_ORIGINS` | Comma-separated allowed origins | `*` |
+| `MAX_TRANSCRIPT_CHARS` | Max transcript size for `/extract` | `100000` |
+| `MAX_AUDIO_BYTES` | Max audio upload size for `/transcribe` | `26214400` |
 
-`.env` is git-ignored; `.env.example` (committed) holds placeholders only.
+`.env` is git-ignored; `.env.example` (committed) holds placeholders only. Extraction
+and generation use **separate models** so accuracy-critical extraction runs on the
+stronger model while the generators run on a cheaper one (~16× cheaper per call).
 
 ## API
 
@@ -181,41 +198,66 @@ Priya: Great. I'll loop in our head of data Aisha for the technical deep-dive ne
 
 ## Testing
 
-Unit + integration tests mock the LLM boundary, so they run offline and free:
+Unit, integration, and route tests mock the LLM boundary, so they run offline and
+free:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+ruff check . && ruff format --check .
 pytest
 ```
 
 Covers structured-output schema validation, malformed-output handling, the
-extraction service, the full transcript → CRM + tasks + email pipeline, and the
-eval scoring math.
+extraction service, the full transcript → CRM + tasks + email pipeline, API routes
+(success + 404/413/422/502/503 error paths), and the eval scoring math. The same
+checks run in CI on every push/PR (`.github/workflows/ci.yml`).
 
 ## Evaluation
 
 The eval measures how well extraction captures reality on a small labeled dataset
-(`eval/dataset/`, ~5 synthetic transcripts with hand-labeled action items and
-decisions). An **LLM judge** semantically matches predicted items to ground truth:
+(`eval/dataset/`, 5 synthetic transcripts with hand-labeled action items and
+decisions). An **LLM judge** semantically matches predicted items to ground truth.
+Because the decision vs action-item boundary is fuzzy, the headline metric pools both
+categories:
 
 - **Recall** — share of ground-truth items that were captured.
 - **Precision** — share of predicted items that match a real item; `1 - precision`
   approximates the hallucination rate.
 
-Run it (needs a real `OPENAI_API_KEY`; makes API calls):
+Latest run (`gpt-4o` extraction; see [`eval/report.md`](eval/report.md) for the full
+report with per-transcript breakdown and before/after examples):
+
+| Metric | Precision | Recall |
+| --- | --- | --- |
+| **Items (pooled)** | **100%** | **76%** |
+
+Precision is 100% (no hallucinated items); the remaining recall gap is mostly soft,
+debatable "decisions" the conservative extractor omits rather than invents.
+
+Run it yourself (needs a real `OPENAI_API_KEY`; makes API calls):
 
 ```bash
 python -m eval.run_eval
 ```
 
-Outputs `eval/report.md` and `eval/report.json` with per-category and per-transcript
-precision/recall, a list of hallucinations/misses, and full before/after examples.
+## Deployment notes
+
+- **Migrations** — schema is managed by Alembic; the container entrypoint runs
+  `alembic upgrade head` before starting the API. Create new migrations with
+  `alembic revision -m "..."`.
+- **Container** — runs as a non-root user with a Docker `HEALTHCHECK`; compose sets a
+  restart policy and waits for Postgres to be healthy before starting.
+- **Reliability** — OpenAI calls use a configurable timeout and automatic retries;
+  provider/auth/rate-limit failures map to clean `4xx/5xx` responses.
+- **Hardening for production** — set `CORS_ALLOW_ORIGINS` to your real origins,
+  put the service behind TLS, and use managed Postgres with a strong `DATABASE_URL`.
 
 ## Tech stack
 
-Python · FastAPI · Pydantic · async SQLAlchemy + PostgreSQL · OpenAI
-(Whisper + gpt-4o structured outputs) · Docker Compose · pytest.
+Python 3.12 · FastAPI · Pydantic · async SQLAlchemy + PostgreSQL · Alembic · OpenAI
+(Whisper + gpt-4o structured outputs) · Docker Compose · pytest · ruff · GitHub
+Actions CI.
 
 ## License
 
-MIT
+Released under the [MIT License](LICENSE).

@@ -8,27 +8,27 @@ The headline metric is **Items (pooled)**: because the decision vs action-item b
 
 | Metric | Precision | Recall |
 | --- | --- | --- |
-| **Items (pooled)** | **94.4%** | **65.4%** |
-| Action items only | 100.0% | 70.6% |
-| Decisions only | 66.7% | 44.4% |
+| **Items (pooled)** | **100.0%** | **76.0%** |
+| Action items only | 88.9% | 82.4% |
+| Decisions only | 100.0% | 25.0% |
 
 ## Per-transcript breakdown (pooled items)
 
 | Transcript | Scenario | Precision | Recall |
 | --- | --- | --- | --- |
-| call_01 | sales discovery | 100.0% | 60.0% |
-| call_02 | support / troubleshooting | 100.0% | 80.0% |
-| call_03 | renewal / upsell | 100.0% | 60.0% |
+| call_01 | sales discovery | 100.0% | 80.0% |
+| call_02 | support / troubleshooting | 100.0% | 100.0% |
+| call_03 | renewal / upsell | 100.0% | 40.0% |
 | call_04 | internal team sync | 100.0% | 83.3% |
-| call_05 | churn risk / negative | 66.7% | 40.0% |
+| call_05 | churn risk / negative | 100.0% | 80.0% |
 
 ### Hallucinations & misses
 
-- **call_01** — hallucinated: none; missed: ['Loop in head of data Aisha for the technical deep-dive', 'Northwind will make a platform decision by the end of the quarter']
-- **call_02** — hallucinated: none; missed: ['Raise the import timeout on the account to 120 seconds']
-- **call_03** — hallucinated: none; missed: ['Run the quote by the procurement team before signing', 'Target signing the renewal before the current contract expires']
+- **call_01** — hallucinated: none; missed: ['Northwind will make a platform decision by the end of the quarter']
+- **call_02** — hallucinated: none; missed: none
+- **call_03** — hallucinated: none; missed: ['Run the quote by the procurement team before signing', 'Upgrade Cedar Health to the 30-seat tier with the advanced permissions module', 'Target signing the renewal before the current contract expires']
 - **call_04** — hallucinated: none; missed: ['Prepare the CSV export feature for release by Friday']
-- **call_05** — hallucinated: ['Marcus will assign a dedicated technical account manager to Ken and escalate support to priority at no extra cost.']; missed: ['Take the proposed credit to the exec team to push to stay', 'Assign a dedicated technical account manager to Orbit Media', "Escalate Orbit's support tier to priority at no extra cost"]
+- **call_05** — hallucinated: none; missed: ['Take the proposed credit to the exec team to push to stay']
 
 ## Example before / after
 
@@ -70,40 +70,46 @@ Priya: Works for me. Talk soon.
       "is_primary_contact": false
     }
   ],
-  "summary": "Priya from Northwind Analytics and Marcus from DataForge discussed Northwind's need to replace their in-house reporting stack due to performance issues. They talked about the scale of use, budget, and timeline for decision-making. Marcus agreed to send a tailored proposal and customer references, and they planned a technical deep-dive for the following week.",
+  "summary": "Northwind Analytics is evaluating platforms to replace their in-house reporting stack due to performance issues. They are considering DataForge and have a budget of approximately $60,000 per year. DataForge will provide a tailored proposal and customer references. A technical deep-dive is planned for next week with Northwind's head of data.",
   "key_points": [
     "Northwind Analytics is looking to replace their in-house reporting stack due to performance issues.",
-    "The decision is expected by the end of the quarter with a budget of approximately 60k a year.",
-    "DataForge's mid-tier plan fits within the budget.",
-    "Marcus will send a tailored proposal and customer references by Wednesday.",
-    "A technical deep-dive is planned for next week with Northwind's head of data."
+    "DataForge can handle the required scale and fits within the budget.",
+    "A tailored proposal and customer references will be provided by DataForge.",
+    "A technical deep-dive is scheduled for next week."
   ],
   "decisions": [],
   "action_items": [
     {
-      "description": "Marcus to send a tailored proposal to Priya by Wednesday.",
+      "description": "Put together a tailored proposal for Northwind Analytics.",
       "owner": "Marcus",
-      "due_date_raw": "Wednesday",
+      "due_date_raw": "by Wednesday",
       "due_date_iso": null,
       "source_quote": "I'll put together a tailored proposal and send it over by Wednesday."
     },
     {
-      "description": "Marcus to include two customer references from analytics firms in the proposal.",
+      "description": "Include two customer references from analytics firms in the proposal.",
       "owner": "Marcus",
-      "due_date_raw": "Wednesday",
+      "due_date_raw": null,
       "due_date_iso": null,
       "source_quote": "I'll add two references from analytics firms."
     },
     {
-      "description": "Schedule a technical deep-dive for next week with Northwind's head of data, Aisha.",
-      "owner": null,
+      "description": "Loop in Aisha, the head of data, for the technical deep-dive.",
+      "owner": "Priya",
+      "due_date_raw": null,
+      "due_date_iso": null,
+      "source_quote": "I'll loop in our head of data, Aisha, so she can join the technical deep-dive."
+    },
+    {
+      "description": "Schedule the technical deep-dive for next week.",
+      "owner": "Marcus",
       "due_date_raw": "next week",
       "due_date_iso": null,
       "source_quote": "Let's aim to schedule that deep-dive for next week."
     }
   ],
   "sentiment": "positive",
-  "outcome": "Marcus to send proposal and references; technical deep-dive scheduled for next week.",
+  "outcome": "DataForge to send proposal and references; technical deep-dive scheduled for next week.",
   "primary_contact_name": "Priya"
 }
 ```
@@ -120,9 +126,9 @@ Priya: Works for me. Talk soon.
   },
   "deal_stage": "proposal",
   "sentiment": "positive",
-  "notes": "Priya from Northwind Analytics discussed their need to replace their in-house reporting stack due to performance issues with Marcus from DataForge. They covered budget and timeline, with a decision expected by the end of the quarter. Marcus will send a tailored proposal and customer references by Wednesday, and a technical deep-dive is planned for next week.",
-  "next_step": "Marcus to send a tailored proposal and customer references by Wednesday.",
-  "open_action_count": 3
+  "notes": "Northwind Analytics is evaluating platforms to replace their in-house reporting stack due to performance issues. They are considering DataForge, which fits their budget of $60,000 per year. DataForge will provide a tailored proposal and customer references. A technical deep-dive is scheduled for next week with Northwind's head of data.",
+  "next_step": "Put together a tailored proposal for Northwind Analytics.",
+  "open_action_count": 4
 }
 ```
 
@@ -132,7 +138,7 @@ Priya: Works for me. Talk soon.
 [
   {
     "owner": "Marcus",
-    "description": "Send a tailored proposal to Priya by Wednesday.",
+    "description": "Put together a tailored proposal for Northwind Analytics.",
     "due_date": null,
     "priority": "medium"
   },
@@ -143,8 +149,14 @@ Priya: Works for me. Talk soon.
     "priority": "medium"
   },
   {
-    "owner": "unassigned",
-    "description": "Schedule a technical deep-dive for next week with Northwind's head of data, Aisha.",
+    "owner": "Priya",
+    "description": "Loop in Aisha, the head of data, for the technical deep-dive.",
+    "due_date": null,
+    "priority": "medium"
+  },
+  {
+    "owner": "Marcus",
+    "description": "Schedule the technical deep-dive for next week.",
     "due_date": null,
     "priority": "medium"
   }
@@ -159,13 +171,17 @@ Subject: Follow-Up on Our Recent Call
 
 Dear Priya,
 
-Thank you for the insightful call we had regarding Northwind Analytics' need to replace your in-house reporting stack. I appreciate the opportunity to discuss your requirements and how DataForge can assist in this transition.
+Thank you for taking the time to speak with us regarding Northwind Analytics' needs. We appreciate the opportunity to discuss how DataForge can assist in replacing your in-house reporting stack due to the performance issues you've been experiencing.
 
-To recap, we talked about the performance issues you are facing and the budget of approximately $60k a year, with a decision expected by the end of the quarter. I am pleased to confirm that our mid-tier plan fits within your budget.
+To recap, we understand that Northwind Analytics is considering DataForge as a potential solution, with a budget of approximately $60,000 per year. We will be providing a tailored proposal along with customer references from analytics firms. Additionally, we have scheduled a technical deep-dive for next week, which will include Aisha, your head of data.
 
-As agreed, I will send you a tailored proposal along with two customer references from analytics firms by Wednesday. Additionally, we will aim to schedule a technical deep-dive for next week with Aisha, your head of data.
+Here are the agreed next steps:
+1. Marcus will put together a tailored proposal and send it over by Wednesday.
+2. Marcus will include two customer references from analytics firms in the proposal.
+3. You will loop in Aisha for the technical deep-dive.
+4. Marcus will aim to schedule the technical deep-dive for next week.
 
-Looking forward to our continued collaboration.
+We look forward to moving ahead and appreciate your collaboration.
 
 Best regards,
 [Your name]
@@ -199,37 +215,32 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
   "participants": [
     {
       "name": "Tom",
-      "role": "Support",
+      "role": null,
       "organization": "Beacon Logistics",
       "is_primary_contact": true
     },
     {
       "name": "Elena",
       "role": "Support",
-      "organization": "DataForge Support",
+      "organization": "DataForge",
       "is_primary_contact": false
     }
   ],
-  "summary": "Tom from Beacon Logistics reported sync errors on their nightly data import due to a connection timeout. Elena from DataForge Support identified the issue as being related to increased data volume and proposed increasing the import timeout to 120 seconds. She also plans to involve the engineering team to optimize the import process for larger datasets.",
+  "summary": "Tom from Beacon Logistics reported sync errors on their nightly data import due to a connection timeout. Elena from DataForge Support identified the issue as being related to increased data volume and will increase the import timeout to 120 seconds. Tom will re-run the import after the change is applied and report back.",
   "key_points": [
     "Beacon Logistics is experiencing sync errors due to connection timeouts.",
-    "The issue is likely caused by increased data volume after onboarding a new warehouse.",
+    "The issue is likely caused by increased data volume from a new warehouse.",
     "DataForge Support will increase the import timeout to 120 seconds.",
-    "An engineering ticket will be opened to optimize the import process."
+    "Tom will re-run the import after the change is applied."
   ],
-  "decisions": [
-    {
-      "description": "Increase the import timeout to 120 seconds for Beacon Logistics.",
-      "source_quote": "I'll raise the import timeout on your account to 120 seconds, which should let the job finish."
-    }
-  ],
+  "decisions": [],
   "action_items": [
     {
-      "description": "Re-run the failed import after 8pm once the timeout change is applied.",
-      "owner": "Tom",
-      "due_date_raw": "tonight",
+      "description": "Raise the import timeout on Beacon Logistics' account to 120 seconds.",
+      "owner": "Elena",
+      "due_date_raw": null,
       "due_date_iso": null,
-      "source_quote": "Yes \u2014 please re-run the failed import tonight after 8pm once I've applied the change, and let me know if it still fails."
+      "source_quote": "I'll raise the import timeout on your account to 120 seconds, which should let the job finish."
     },
     {
       "description": "Open a ticket for the engineering team to optimize the import for larger datasets.",
@@ -237,6 +248,20 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
       "due_date_raw": null,
       "due_date_iso": null,
       "source_quote": "I'll also open a ticket for our engineering team to look at optimizing the import for larger datasets."
+    },
+    {
+      "description": "Re-run the failed import after 8pm once the change is applied.",
+      "owner": "Tom",
+      "due_date_raw": "tonight after 8pm",
+      "due_date_iso": null,
+      "source_quote": "please re-run the failed import tonight after 8pm once I've applied the change, and let me know if it still fails."
+    },
+    {
+      "description": "Report back to Elena tomorrow morning about the import status.",
+      "owner": "Tom",
+      "due_date_raw": "tomorrow morning",
+      "due_date_iso": null,
+      "source_quote": "I'll re-run it tonight and report back tomorrow morning."
     },
     {
       "description": "Follow up with Tom tomorrow to confirm everything is stable.",
@@ -247,7 +272,7 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
     }
   ],
   "sentiment": "positive",
-  "outcome": "Timeout will be increased and engineering will optimize the import process.",
+  "outcome": "Elena will adjust the timeout and Tom will re-run the import to check for resolution.",
   "primary_contact_name": "Tom"
 }
 ```
@@ -259,14 +284,14 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
   "contact": {
     "name": "Tom",
     "organization": "Beacon Logistics",
-    "role": "Support",
+    "role": null,
     "email": null
   },
-  "deal_stage": "qualification",
+  "deal_stage": "follow_up",
   "sentiment": "positive",
-  "notes": "Tom reported sync errors on nightly data imports due to connection timeouts, likely caused by increased data volume. Elena proposed increasing the import timeout to 120 seconds and will involve engineering to optimize the import process for larger datasets.",
-  "next_step": "Re-run the failed import after 8pm once the timeout change is applied.",
-  "open_action_count": 3
+  "notes": "Tom from Beacon Logistics reported sync errors due to connection timeouts, likely from increased data volume. Elena from DataForge Support will increase the import timeout to 120 seconds. Tom will re-run the import after the change and report back.",
+  "next_step": "Tom will re-run the failed import after 8pm and report back tomorrow morning.",
+  "open_action_count": 5
 }
 ```
 
@@ -275,8 +300,8 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
 ```json
 [
   {
-    "owner": "Tom",
-    "description": "Re-run the failed import after 8pm once the timeout change is applied.",
+    "owner": "Elena",
+    "description": "Raise the import timeout on Beacon Logistics' account to 120 seconds.",
     "due_date": null,
     "priority": "high"
   },
@@ -285,6 +310,18 @@ Elena: Perfect. I'll follow up with you tomorrow to confirm everything is stable
     "description": "Open a ticket for the engineering team to optimize the import for larger datasets.",
     "due_date": null,
     "priority": "medium"
+  },
+  {
+    "owner": "Tom",
+    "description": "Re-run the failed import after 8pm once the change is applied.",
+    "due_date": null,
+    "priority": "high"
+  },
+  {
+    "owner": "Tom",
+    "description": "Report back to Elena tomorrow morning about the import status.",
+    "due_date": null,
+    "priority": "high"
   },
   {
     "owner": "Elena",
@@ -303,18 +340,19 @@ Subject: Follow-Up on Our Recent Call Regarding Data Import Issues
 
 Dear Tom,
 
-Thank you for taking the time to discuss the sync errors you are experiencing with your nightly data import. I appreciate your insights and collaboration on this matter.
+Thank you for taking the time to discuss the sync errors you are experiencing with your nightly data import. We appreciate your patience as we work to resolve this issue.
 
-To recap, we identified that the sync errors are due to connection timeouts, likely caused by increased data volume after onboarding a new warehouse. As we agreed, we will increase the import timeout to 120 seconds, which should allow the job to complete successfully. Additionally, I will open a ticket for our engineering team to optimize the import process for larger datasets.
+During our call, we identified that the sync errors are likely due to connection timeouts caused by increased data volume from your new warehouse. To address this, Elena from DataForge Support will increase the import timeout on your account to 120 seconds. After this change is applied, you will re-run the import tonight after 8 PM and report back on its status tomorrow morning.
 
-Here are the next steps we discussed:
-1. You will re-run the failed import tonight after 8pm once the timeout change has been applied.
-2. I will open a ticket for the engineering team to look into optimizing the import for larger datasets.
-3. I will follow up with you tomorrow to confirm that everything is stable.
+Here are the agreed next steps:
+1. Elena will raise the import timeout to 120 seconds.
+2. Elena will open a ticket for the engineering team to optimize the import for larger datasets.
+3. You will re-run the failed import tonight after 8 PM.
+4. You will report back to Elena tomorrow morning about the import status.
+5. Elena will follow up with you tomorrow to confirm everything is stable.
 
-Please let me know if you have any further questions or concerns. 
+Please let me know if you have any questions or need further assistance.
 
 Best regards,
-
 [Your name]
 ```
