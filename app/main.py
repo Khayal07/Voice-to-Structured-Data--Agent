@@ -7,6 +7,7 @@ from sqlalchemy import text
 
 from app.config import get_settings
 from app.db.database import engine, init_db
+from app.routers import extract as extract_router
 
 
 @asynccontextmanager
@@ -26,6 +27,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.include_router(extract_router.router)
 
 
 @app.get("/health", tags=["meta"])
